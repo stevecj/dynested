@@ -15,6 +15,18 @@
     <%= f.label :title %><br />
     <%= f.text_field :title %>
   </div>
+
+  <%= fields_for :tracks do |tracks_fields| %>
+    <div class="field">
+      <%= tracks_fields.label :name %><br />
+      <%= tracks_fields.text_field :name %>
+    </div>
+    <div class="field">
+      <%= tracks_fields.label :duration_seconds %><br />
+      <%= tracks_fields.text_field :duration_seconds %>
+    </div>
+  <% end %>
+
   <div class="actions">
     <%= f.submit %>
   </div>
