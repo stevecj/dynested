@@ -1,0 +1,12 @@
+Dynested
+========
+
+This will be a Rails extension to support dynamic collections in
+views that are freindly with accepts_nested_attributes_for in
+models.
+
+Initially, this is intended to be compatible with Rails 3.0.x
+and newer, using jQuery.  Support for Rails 2.x and Prototype
+might or might not be added later.
+
+Copyright (c) 2011 Steve Jorgensen, released under the MIT license
