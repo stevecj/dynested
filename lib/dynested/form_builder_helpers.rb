@@ -1,5 +1,11 @@
 module Dynested
   module FormBuilderHelpers
+
+    # An extended version of fields_for with improved support
+    # for dynamic collections.  So far, this only supports a
+    # collection name as the first argument, and does not yet
+    # deal with having a model instance or array as the second
+    # argument.
     def fields_for_collection(collection_name_or_array, *args, &b)
       options = args.extract_options!
       # Only handling the case of a lone collection name parameter for now.
