@@ -23,6 +23,13 @@ ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
+  config.use_transactional_fixtures = false
+  config.before :each do
+    DatabaseCleaner.start
+  end
+  config.after :each do
+    DatabaseCleaner.clean
+  end
   # Remove this line if you don't want RSpec's should and should_not
   # methods or matchers
   require 'rspec/expectations'
