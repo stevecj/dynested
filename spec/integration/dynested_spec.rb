@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Dynested" do
   include Capybara::DSL
   
-  context "editing an album with 2 existing tracks" do
+  context "editing an album with 2 existing tracks, sorted by name" do
     before(:each) do
       @album = Album.create(
         :title => "Bits n' Bytes",
@@ -22,5 +22,27 @@ describe "Dynested" do
 
       page.should have_selector('input#album_tracks_attributes_1_id[value="%d"]' % @album.tracks[1].id)
     end
+    
+    it "should wrap each item in an appropriately constructed div" do
+      wrapper_selector_common =
+        'div' +
+        '.nested_item' +
+        '[data-nested-collection="album[tracks_attributes]"]'
+
+      within(
+        wrapper_selector_common + '#album_tracks_attributes_0[data-nested-item="album[tracks_attributes][0]"]'
+      ) do
+        page.should have_selector('input#album_tracks_attributes_0_title[value="Byte Me"]')
+        page.should have_selector('input#album_tracks_attributes_0_id[value="%d"]' % @album.tracks[0].id)
+      end
+
+      within(
+        wrapper_selector_common + '#album_tracks_attributes_1[data-nested-item="album[tracks_attributes][1]"]'
+      ) do
+        page.should have_selector('input#album_tracks_attributes_1_title[value="Streamin Down"]')
+        page.should have_selector('input#album_tracks_attributes_1_id[value="%d"]' % @album.tracks[1].id)
+      end
+    end
+
   end
 end
