@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20110619232307) do
   end
 
   create_table "tracks", :force => true do |t|
+    t.integer  "album_id"
     t.string   "title"
     t.integer  "duration_seconds"
     t.datetime "created_at"

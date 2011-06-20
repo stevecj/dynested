@@ -16,14 +16,14 @@
     <%= f.text_field :title %>
   </div>
 
-  <%= fields_for :tracks do |tracks_fields| %>
+  <%= f.fields_for :tracks do |track_fields| %>
     <div class="field">
-      <%= tracks_fields.label :name %><br />
-      <%= tracks_fields.text_field :name %>
+      <%= track_fields.label :title %><br />
+      <%= track_fields.text_field :title %>
     </div>
     <div class="field">
-      <%= tracks_fields.label :duration_seconds %><br />
-      <%= tracks_fields.text_field :duration_seconds %>
+      <%= track_fields.label :duration_seconds %><br />
+      <%= track_fields.text_field :duration_seconds %>
     </div>
   <% end %>
 
