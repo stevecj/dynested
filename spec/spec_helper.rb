@@ -30,6 +30,12 @@ RSpec.configure do |config|
   config.after :each do
     DatabaseCleaner.clean
   end
+  config.before :all do
+    # Make sure dummy app has latest dynested.js from gem.
+    FileUtils.cp \
+      File.dirname(__FILE__) + '/../lib/generators/templates/dynested.js',
+      File.dirname(__FILE__) + '/dummy/public/javascripts/'
+  end
   # Remove this line if you don't want RSpec's should and should_not
   # methods or matchers
   require 'rspec/expectations'
