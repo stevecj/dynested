@@ -16,7 +16,7 @@
     <%= f.text_field :title %>
   </div>
 
-  <%= f.fields_for :tracks do |track_fields| %>
+  <%= f.fields_for_collection :tracks do |track_fields| %>
     <div class="field">
       <%= track_fields.label :title %><br />
       <%= track_fields.text_field :title %>
