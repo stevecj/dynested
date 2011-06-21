@@ -15,6 +15,10 @@ describe "Dynested" do
       visit edit_album_path(@album)
     end
 
+    # TODO: Many of the tests in here are not really integration tests,
+    # but don't really know how to test them in isolation yet.  Should
+    # fix that sooner or later.
+
     it "should generate the elements that fields_for would" do
       page.should have_selector('input#album_tracks_attributes_0_title[value="Byte Me"]')
       page.should have_selector('input#album_tracks_attributes_0_duration_seconds[value="255"]')
@@ -44,5 +48,18 @@ describe "Dynested" do
       end
     end
 
+    it "should generate a template for a next new item" do
+      page.should have_selector \
+        '.nested_item_template' +
+        '[data-nested-collection="album[tracks_attributes]"]' +
+        '[data-next-nested-item="album[tracks_attributes][2]"]'
+      within(
+        '.nested_item_template' +
+        '[data-nested-collection="album[tracks_attributes]"]'
+      ) do
+        page.should have_selector \
+          'input#album_tracks_attributes_2_title[name="album[tracks_attributes][2][title]"]'
+      end
+    end
   end
 end
