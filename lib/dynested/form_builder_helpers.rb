@@ -23,6 +23,15 @@ module Dynested
       items.map(&:content).inject{|m, content| m += content}
     end
 
+    def link_to_add_collection_item(collection_attr_name, html_options={}, &b)
+      view_context = eval('self', b)
+      collection_name = '%s[%s_attributes]' % [object_name, collection_attr_name]
+      html_options = HashWithIndifferentAccess.new(html_options)
+      html_options[:class] = 'new_nested_item_link'
+      html_options['data-nested-collection'] = collection_name
+      view_context.link_to('JavaScript:void(0);', html_options, &b)
+    end
+
     class FieldsForItem
       attr_accessor :content
 

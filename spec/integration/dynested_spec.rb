@@ -61,5 +61,14 @@ describe "Dynested" do
           'input#album_tracks_attributes_2_title[name="album[tracks_attributes][2][title]"]'
       end
     end
+
+    it "should generate an add-item link" do
+      within(
+        'a.new_nested_item_link[data-nested-collection="album[tracks_attributes]"]'
+      ) do
+        page.should have_content 'Add new track'
+      end
+    end
+
   end
 end
