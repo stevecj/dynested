@@ -70,5 +70,21 @@ describe "Dynested" do
       end
     end
 
+    it "should generate remove-item links" do
+      selectors = (0..1).map do |n|
+        ( '#album_tracks_attributes_%d ' +
+            'a' +
+            '.delete_nested_item_link' +
+            '[data-nested-collection="album[tracks_attributes]"]' #+
+            '[data-nested-item="album[tracks_attributes][%d]"]'
+        ) % [n, n]
+      end
+      selectors.each do |selector|
+        within selector do
+          page.should have_content 'Delete track'
+        end
+      end
+    end
+
   end
 end

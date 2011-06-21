@@ -44,6 +44,9 @@ module Dynested
         @content = builder.fields_for(
           collection_attr_name, item_object, opts
         ) do |item_fields|
+          class << item_fields
+            include BuilderMethods
+          end
           @item_name = item_fields.object_name
           b.call(item_fields)
         end
@@ -71,6 +74,19 @@ module Dynested
           'data-next-nested-item'  => @item_name
         )
       end
+
+      module BuilderMethods
+        def link_to_delete_item(html_options={}, &b)
+          view_context = eval('self', b)
+          collection_name = object_name.sub(/\[\d*\]$/, '')
+          html_options = HashWithIndifferentAccess.new(html_options)
+          html_options[:class] = 'delete_nested_item_link'
+          html_options['data-nested-collection'] = collection_name
+          html_options['data-nested-item'] = object_name
+          view_context.link_to('JavaScript:void(0);', html_options, &b)
+        end
+      end
+
     end
 
   end
