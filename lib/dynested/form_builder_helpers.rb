@@ -1,5 +1,6 @@
 module Dynested
   module FormBuilderHelpers
+    NEWLINE = "\n".html_safe()
     
     # An extended version of fields_for with improved support
     # for dynamic collections.  So far, this only supports a
@@ -20,7 +21,7 @@ module Dynested
       template_item.wrap_as_item_element
       template_item.wrap_as_new_item_template
       items << template_item
-      items.map(&:content).inject{|m, content| m += content}
+      items.map(&:content).inject{|m, content| m += (content + NEWLINE) }
     end
 
     def link_to_add_collection_item(collection_attr_name, html_options={}, &b)

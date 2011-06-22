@@ -22,6 +22,8 @@ ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
+DatabaseCleaner.strategy = :truncation
+
 RSpec.configure do |config|
   config.use_transactional_fixtures = false
   config.before :each do
