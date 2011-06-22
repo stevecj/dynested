@@ -145,13 +145,27 @@ describe "Dynested" do
         end
       end
 
-      it "Should remove an existing item by flagging and hiding" do
+      it "should remove an existing item by flagging and hiding" do
         page.execute_script "Dynested.item('album[tracks_attributes][1]').deleteIt();"
         page.should have_selector('#album_tracks_attributes_1__destroy[value="true"]')
         within '#album_tracks_attributes_1' do
           page.should have_xpath("//*[text()='Title']", :visible => false)
         end
       end
+
+      it "should remove a new item by deleting its content from the page"
+
+      it "should store the template as an attribute value of the template, so it won't be posted as an empty item."
+
+      it "should allow for cancelable before-add handlers"
+
+      it "should allow for cancelable before-delete handlers"
+
+      it "should allow for after-add handlers"
+
+      it "should allow for after-delete handlers"
+
+      it "should allow for after-add-or-delete handlers"
 
     end
   end
