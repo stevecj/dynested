@@ -5,6 +5,49 @@ function Dynested() {
   function fieldNameToId(fieldName) {
     return fieldName.replace(/\[/g, '_').replace(/\]/g, '');
   }
+  Dynested.fieldNameToId = fieldNameToId;
+
+  function Collection(name) {
+    this.name = name;
+
+    function template() {
+      return $(
+        '.nested_item_template[data-nested-collection="' + this.name + '"]'
+      );
+    }
+    this.template = template;
+
+    var items = {};
+    function item(itemName) {
+      if( items[itemName] ) { return items[itemName]; }
+      items[itemName] = new Dynested.Item(this, itemName);
+      return items[itemName];
+    }
+    this.item = item;
+
+    function addNewItem() {
+      var t = this.template();
+      var iName = t.attr('data-next-nested-item');
+      var iId = Dynested.fieldNameToId(iName);
+      var nMatch = iName.match( /^(.*\[)(\d*)(\]$)/ );
+      var iNextName = nMatch[1] + (parseInt(nMatch[2]) + 1) + nMatch[3];
+      var iNextId = Dynested.fieldNameToId(iNextName);
+      var content = t.attr('data-nested-item-content');
+      t.before( content );
+      var nextContent = $(document.createElement('div'));
+      nextContent.html( content );
+      nextContent.find('*').each( function () {
+        Collection.updateIdentifier($(this), 'id',   iId,   iNextId);
+        Collection.updateIdentifier($(this), 'for',  iId,   iNextId);
+        Collection.updateIdentifier($(this), 'name', iName, iNextName);
+        Collection.updateIdentifier($(this), 'data-nested-item', iName, iNextName);
+      });
+      t.attr('data-nested-item-content', nextContent.html());
+      t.attr('data-next-nested-item', iNextName);
+    }
+    this.addNewItem = addNewItem;
+  }
+  Dynested.Collection = Collection;
 
   function updateIdentifier(element, attrName, oldPrefix, newPrefix) {
     var attrVal = $(element).attr(attrName);
@@ -17,35 +60,8 @@ function Dynested() {
 
     element.attr( attrName, newPrefix + attrVal.substr(oldPrefix.length) );
   }
+  Collection.updateIdentifier = updateIdentifier;
 
-  function Collection(name) {
-    this.name = name;
-    this.template = function() {
-      return $(
-        '.nested_item_template[data-nested-collection="' + this.name + '"]'
-      );
-    };
-    this.addNewItem = function () {
-      var t = this.template();
-      var iName = t.attr('data-next-nested-item');
-      var iId = fieldNameToId(iName);
-      var nMatch = iName.match( /^(.*\[)(\d*)(\]$)/ );
-      var iNextName = nMatch[1] + (parseInt(nMatch[2]) + 1) + nMatch[3];
-      var iNextId = fieldNameToId(iNextName);
-      var content = t.attr('data-nested-item-content');
-      t.before( content );
-      var nextContent = $(document.createElement('div'));
-      nextContent.html( content );
-      nextContent.find('*').each( function () {
-        updateIdentifier($(this), 'id',   iId,   iNextId);
-        updateIdentifier($(this), 'for',  iId,   iNextId);
-        updateIdentifier($(this), 'name', iName, iNextName);
-        updateIdentifier($(this), 'data-nested-item', iName, iNextName);
-      });
-      t.attr('data-nested-item-content', nextContent.html());
-      t.attr('data-next-nested-item', iNextName);
-    };
-  }
 
   var collections = {};
   function collection(name) {
@@ -53,29 +69,36 @@ function Dynested() {
     collections[name] = new Collection(name);
     return collections[name];
   }
+  Dynested.collection = collection;
 
-  function Item(name) {
+  function Item(collection, name) {
+    this.collection = collection;
     this.name = name;
     this.deleteIt = function () {
-      var destroyFieldName = this.name + '[_destroy]';
-      $('input[name="' + destroyFieldName + '"]').val('true');
-      $('.nested_item[data-nested-item="' + name + '"]').hide();
-    };
-    this.collection = function() {
-      var collectionName = this.name.replace(/\[\d+\]$/, '');
-      return Dynested.collection(collectionName);
+      var itemElement = $('.nested_item[data-nested-item="' + name + '"]');
+      var idFieldName = this.name + '[id]';
+      if( $('input[name="' + idFieldName + '"]').length > 0 ) {
+        // Existing saved item (has id field), so flag for destruction, and hide.
+        var destroyFieldName = this.name + '[_destroy]';
+        $('input[name="' + destroyFieldName + '"]').val('true');
+        itemElement.hide();
+      } else {
+        // Unsaved item, so simply remove from page.
+        itemElement.remove();
+      }
     };
   }
-
-  var items = {};
-  function item(name) {
-    if( items[name] ) { return items[name]; }
-    items[name] = new Item(name);
-    return items[name];
-  }
-
-  Dynested.Collection = Collection;
-  Dynested.collection = collection;
   Dynested.Item = Item;
+
+  function collectionNameFromItemName(itemName) {
+    return itemName.replace(/\[\d+\]$/, '');
+  }
+  Item.collectionNameFromItemName = collectionNameFromItemName;
+
+  function item(name) {
+    var collectionName = Dynested.Item.collectionNameFromItemName(name);
+    var collection = Dynested.collection(collectionName);
+    return collection.item(name)
+  }
   Dynested.item = item;
 })();

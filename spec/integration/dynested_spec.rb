@@ -121,8 +121,8 @@ describe "Dynested" do
         thisIsMeValue.should == 'yes'
       end
 
-      it "should infer an item's collection from its name, and expose the collection object" do
-        collectionName = page.evaluate_script('Dynested.item("foo[bars_attributes][5]").collection().name')
+      it "should provide access to an item's collection object" do
+        collectionName = page.evaluate_script('Dynested.item("foo[bars_attributes][5]").collection.name')
         collectionName.should == 'foo[bars_attributes]'
       end
 
@@ -164,9 +164,15 @@ describe "Dynested" do
         end
       end
 
-      it "should remove a new item by deleting its content from the page"
+      it "should remove a new item by deleting its content from the page" do
+        # Should render the page with a new item already included
+        # as the setup for this test, but for now, set up by
+        # invoking addNewItem within the rendered page.
+        page.execute_script "Dynested.collection('album[tracks_attributes]').addNewItem();"
 
-      it "should store the template as an attribute value of the template, so it won't be posted as an empty item."
+        page.execute_script "Dynested.item('album[tracks_attributes][2]').deleteIt();"
+        page.should have_no_selector('[data-nested-item="album[tracks_attributes][2]"]')
+      end
 
       it "should allow for cancelable before-add handlers"
 
