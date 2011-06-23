@@ -49,17 +49,15 @@ describe "Dynested" do
     end
 
     it "should generate a template for a next new item" do
-      page.should have_selector \
-        '.nested_item_template' +
-        '[data-nested-collection="album[tracks_attributes]"]' +
-        '[data-next-nested-item="album[tracks_attributes][2]"]'
-      within(
+      template_selector = \
         '.nested_item_template' +
         '[data-nested-collection="album[tracks_attributes]"]'
-      ) do
-        page.should have_selector \
-          'input#album_tracks_attributes_2_title[name="album[tracks_attributes][2][title]"]'
-      end
+
+      page.should have_selector(template_selector)
+      template = page.find(template_selector)
+      template['data-next-nested-item'].should == 'album[tracks_attributes][2]'
+      template['data-nested-item-content'].should =~
+        /^\s*<div\s.*\sdata-nested-item\s*="album\[tracks_attributes\]\[2\]".*<\/div>\s*$/m
     end
 
     it "should generate an add-item link" do
@@ -105,6 +103,29 @@ describe "Dynested" do
         visit edit_album_path(@album)
       end
 
+      it "should supply a memoized collection object for a collection name" do
+        page.execute_script('Dynested.collection("foo").thisIsMe = "yes";')
+        nameValue = page.evaluate_script('Dynested.collection("foo").name')
+        thisIsMeValue = page.evaluate_script('Dynested.collection("foo").thisIsMe')
+
+        nameValue.should == 'foo'
+        thisIsMeValue.should == 'yes'
+      end
+
+      it "should supply a memoized item object for an item name" do
+        page.execute_script('Dynested.item("foo[5]").thisIsMe = "yes";')
+        nameValue = page.evaluate_script('Dynested.item("foo[5]").name')
+        thisIsMeValue = page.evaluate_script('Dynested.item("foo[5]").thisIsMe')
+
+        nameValue.should == 'foo[5]'
+        thisIsMeValue.should == 'yes'
+      end
+
+      it "should infer an item's collection from its name, and expose the collection object" do
+        collectionName = page.evaluate_script('Dynested.item("foo[bars_attributes][5]").collection().name')
+        collectionName.should == 'foo[bars_attributes]'
+      end
+
       it "should expose a collection's template element" do
         next_nested_item_name = page.evaluate_script(
           "Dynested.collection('album[tracks_attributes]').template().attr('data-next-nested-item');"
@@ -122,27 +143,17 @@ describe "Dynested" do
 
       it "should update the template when a new collection item is added" do
         page.execute_script "Dynested.collection('album[tracks_attributes]').addNewItem();"
-        page.should have_selector \
-          '.nested_item_template' +
-          '[data-nested-collection="album[tracks_attributes]"]' +
-          '[data-next-nested-item="album[tracks_attributes][3]"]'
-        within(
+        template_selector = \
           '.nested_item_template' +
           '[data-nested-collection="album[tracks_attributes]"]'
-        ) do
-          page.should have_selector \
-            'div.nested_item' +
-            '#album_tracks_attributes_3' +
-            '[data-nested-item="album[tracks_attributes][3]"]'
-          page.should have_selector \
-            'label[for="album_tracks_attributes_3_title"]'
-          page.should have_selector \
-            'input#album_tracks_attributes_3_title' +
-            '[name="album[tracks_attributes][3][title]"]'
-          page.should have_selector \
-            'a.delete_nested_item_link' +
-            '[data-nested-item="album[tracks_attributes][3]"]'
-        end
+
+        page.should have_selector(template_selector)
+        template = page.find(template_selector)
+        template['data-next-nested-item'].should == 'album[tracks_attributes][3]'
+        template['data-nested-item-content'].should =~ /"album\[tracks_attributes\]\[3\]/
+        template['data-nested-item-content'].should_not =~ /"album\[tracks_attributes\]\[2\]/
+        template['data-nested-item-content'].should =~ /"album_tracks_attributes_3/
+        template['data-nested-item-content'].should_not =~ /"album_tracks_attributes_2/
       end
 
       it "should remove an existing item by flagging and hiding" do

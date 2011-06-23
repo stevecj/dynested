@@ -67,12 +67,16 @@ module Dynested
       end
 
       def wrap_as_new_item_template
+        # HTML needs to be esacped by content_tag helper, but
+        # does not happen if value is html_safe.  String.new
+        # converts back to a regular string value.
         @content = @view_context.content_tag(
-          :div, @content,
-          :class                   => 'nested_item_template',
-          :style                   => 'display: none',
-          'data-nested-collection' => @collection_name,
-          'data-next-nested-item'  => @item_name
+          :div, '',
+          :class                     => 'nested_item_template',
+          :style                     => 'display:none;',
+          'data-nested-collection'   => @collection_name,
+          'data-next-nested-item'    => @item_name,
+          'data-nested-item-content' => String.new(@content)
         )
       end
 

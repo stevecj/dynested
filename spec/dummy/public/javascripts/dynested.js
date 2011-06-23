@@ -32,17 +32,18 @@ function Dynested() {
       var nMatch = iName.match( /^(.*\[)(\d*)(\]$)/ );
       var iNextName = nMatch[1] + (parseInt(nMatch[2]) + 1) + nMatch[3];
       var iNextId = fieldNameToId(iNextName);
-      var tClone = t.clone();
-      tClone.find('*').each( function () {
+      var content = t.attr('data-nested-item-content');
+      t.before( content );
+      var nextContent = $(document.createElement('div'));
+      nextContent.html( content );
+      nextContent.find('*').each( function () {
         updateIdentifier($(this), 'id',   iId,   iNextId);
         updateIdentifier($(this), 'for',  iId,   iNextId);
         updateIdentifier($(this), 'name', iName, iNextName);
         updateIdentifier($(this), 'data-nested-item', iName, iNextName);
       });
+      t.attr('data-nested-item-content', nextContent.html());
       t.attr('data-next-nested-item', iNextName);
-      var oldTemplateHtml = t.html();
-      t.html( tClone.html() );
-      t.before( oldTemplateHtml );
     };
   }
 
@@ -59,6 +60,10 @@ function Dynested() {
       var destroyFieldName = this.name + '[_destroy]';
       $('input[name="' + destroyFieldName + '"]').val('true');
       $('.nested_item[data-nested-item="' + name + '"]').hide();
+    };
+    this.collection = function() {
+      var collectionName = this.name.replace(/\[\d+\]$/, '');
+      return Dynested.collection(collectionName);
     };
   }
 
