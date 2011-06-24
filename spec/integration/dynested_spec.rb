@@ -3,13 +3,16 @@ require 'spec_helper'
 describe "Dynested" do
   include Capybara::DSL
   
-  context "editing an album with 2 existing tracks, sorted by name" do
+  context "editing an album with 2 tracks, and 1 review, sorted by name" do
     before(:each) do
       @album = Album.create(
         :title => "Bits n' Bytes",
         :tracks_attributes => [
           { :title => "Byte Me",       :duration_seconds => 255 },
           { :title => "Streamin Down", :duration_seconds => 384 }
+        ],
+        :reviews_attributes => [
+          { :review => "Music to code by!" }
         ]
       )
       visit edit_album_path(@album)
@@ -46,6 +49,17 @@ describe "Dynested" do
         page.should have_selector('input#album_tracks_attributes_1_title[value="Streamin Down"]')
         page.should have_selector('input#album_tracks_attributes_1_id[value="%d"]' % @album.tracks[1].id)
       end
+
+      page.should have_no_selector('#album_tracks_attributes_2')
+    end
+
+    it "should render with an empty new item if desired" do
+      # Sanity check.
+      page.should have_selector('input#album_reviews_attributes_0_id')
+
+      page.should have_selector('.nested_item#album_reviews_attributes_1')
+      # New items do not have id attributes.
+      page.should have_no_selector('input#album_reviews_attributes_1_id')
     end
 
     it "should generate a template for a next new item" do
@@ -98,6 +112,9 @@ describe "Dynested" do
           :tracks_attributes => [
             { :title => "Byte Me",       :duration_seconds => 255 },
             { :title => "Streamin Down", :duration_seconds => 384 }
+          ],
+          :reviews_attributes => [
+            { :review => "Music to code by!" }
           ]
         )
         visit edit_album_path(@album)
@@ -165,13 +182,11 @@ describe "Dynested" do
       end
 
       it "should remove a new item by deleting its content from the page" do
-        # Should render the page with a new item already included
-        # as the setup for this test, but for now, set up by
-        # invoking addNewItem within the rendered page.
-        page.execute_script "Dynested.collection('album[tracks_attributes]').addNewItem();"
+        # Sanity check
+        page.should have_selector('[data-nested-item="album[reviews_attributes][1]"]')
 
-        page.execute_script "Dynested.item('album[tracks_attributes][2]').remove();"
-        page.should have_no_selector('[data-nested-item="album[tracks_attributes][2]"]')
+        page.execute_script "Dynested.item('album[reviews_attributes][1]').remove();"
+        page.should have_no_selector('[data-nested-item="album[reviews_attributes][1]"]')
       end
 
       it "should make add-new links work" do
@@ -187,8 +202,6 @@ describe "Dynested" do
           page.should have_xpath("//*[text()='Title']", :visible => false)
         end
       end
-
-      it "should render with an empty new item if desired"
 
       it "should allow for cancelable before-add handlers"
 

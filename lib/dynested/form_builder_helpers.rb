@@ -9,9 +9,13 @@ module Dynested
     # argument.
     def fields_for_collection(collection_name_or_array, *args, &b)
       opts = args.extract_options!
+      with_new_item = opts.delete(:new_item)
+
       # Only handling the case of a lone collection name parameter for now.
       array = object.send(collection_name_or_array)
-      items = array.map do |item_object|
+      item_objects = Array.new(array)
+      item_objects << array.new if with_new_item
+      items = item_objects.map do |item_object|
         item = FieldsForItem.new(self, collection_name_or_array, item_object, opts, &b)
         item.wrap_as_item_element
         item

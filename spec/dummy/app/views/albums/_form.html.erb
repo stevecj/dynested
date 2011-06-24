@@ -30,8 +30,16 @@
   <% end %>
 
   <div>
-    <%= f.link_to_add_collection_item :tracks do %>Add new track<% end %>
+    <%= f.link_to_add_collection_item :tracks, :new_item => true do %>Add new track<% end %>
   </div>
+
+  <%= f.fields_for_collection :reviews, :new_item => true do |review_fields| %>
+    <div class="field">
+      <%= review_fields.label :review %><br />
+      <%= review_fields.text_field :review %>
+    </div>
+    <%= review_fields.hidden_field :_destroy %>
+  <% end %>
 
   <div class="actions">
     <%= f.submit %>
