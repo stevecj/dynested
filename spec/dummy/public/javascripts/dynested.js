@@ -74,7 +74,7 @@ function Dynested() {
   function Item(collection, name) {
     this.collection = collection;
     this.name = name;
-    this.deleteIt = function () {
+    function remove() {
       var itemElement = $('.nested_item[data-nested-item="' + name + '"]');
       var idFieldName = this.name + '[id]';
       if( $('input[name="' + idFieldName + '"]').length > 0 ) {
@@ -86,7 +86,8 @@ function Dynested() {
         // Unsaved item, so simply remove from page.
         itemElement.remove();
       }
-    };
+    }
+    this.remove = remove;
   }
   Dynested.Item = Item;
 

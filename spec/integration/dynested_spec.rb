@@ -157,7 +157,7 @@ describe "Dynested" do
       end
 
       it "should remove an existing item by flagging and hiding" do
-        page.execute_script "Dynested.item('album[tracks_attributes][1]').deleteIt();"
+        page.execute_script "Dynested.item('album[tracks_attributes][1]').remove();"
         page.should have_selector('#album_tracks_attributes_1__destroy[value="true"]')
         within '#album_tracks_attributes_1' do
           page.should have_xpath("//*[text()='Title']", :visible => false)
@@ -170,7 +170,7 @@ describe "Dynested" do
         # invoking addNewItem within the rendered page.
         page.execute_script "Dynested.collection('album[tracks_attributes]').addNewItem();"
 
-        page.execute_script "Dynested.item('album[tracks_attributes][2]').deleteIt();"
+        page.execute_script "Dynested.item('album[tracks_attributes][2]').remove();"
         page.should have_no_selector('[data-nested-item="album[tracks_attributes][2]"]')
       end
 
