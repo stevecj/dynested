@@ -270,7 +270,23 @@ HERE
         page.should have_css('#album_tracks_attributes_1')
       end
 
-      it "should allow for after-add handlers"
+      it "should allow for after-add handlers, each of which fires in the context of the added element" do
+        # Sanity check.
+        page.should have_no_css('#album_tracks_attributes_2', :visible => true)
+
+        page.execute_script <<-HERE
+document.testCollection = Dynested.collection('album[tracks_attributes]');
+document.testCollection.afterAddItem(function () {
+  document.testItemName = this.name
+});
+document.testCollection.addNewItem();
+HERE
+        # Sanity check.
+        page.should have_css('#album_tracks_attributes_2', :visible => true)
+
+        firedForItemName = page.evaluate_script('document.testItemName')
+        firedForItemName.should == 'album[tracks_attributes][2]'
+      end
 
       it "should allow for after-delete handlers"
 
