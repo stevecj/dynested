@@ -203,9 +203,72 @@ describe "Dynested" do
         end
       end
 
-      it "should allow for cancelable before-add handlers"
+      it "should allow for cancelable before-add handlers" do
+        # Sanity check.
+        page.should have_no_selector('.nested_item[data-nested-item="album[tracks_attributes][2]"]')
 
-      it "should allow for cancelable before-delete handlers"
+        page.execute_script <<-HERE
+document.beforeAddTestNum = 0;
+document.testCollection = Dynested.collection("album[tracks_attributes]");
+document.testCollection.beforeAddItem(function () {
+  document.beforeAddTestNum += 1;
+  if( document.beforeAddTestNum == 1 ) { 
+    return true;  // Proceed on first invocation.
+  } else {
+    return false;  // Cancel on subsequent invocations.
+  }
+});
+document.testCollection.addNewItem();
+HERE
+        timesInvoked = page.evaluate_script('document.beforeAddTestNum')
+        timesInvoked.should == 1
+        page.should have_selector('.nested_item[data-nested-item="album[tracks_attributes][2]"]')
+
+        page.execute_script 'document.testCollection.addNewItem();'
+        timesInvoked = page.evaluate_script('document.beforeAddTestNum')
+        timesInvoked.should == 2
+        page.should have_no_selector('.nested_item[data-nested-item="album[tracks_attributes][3]"]')
+      end
+
+      it "should execute a before-add handler in the context of its collection" do
+        page.execute_script <<-HERE
+document.testCollection = Dynested.collection("album[tracks_attributes]");
+document.testCollection.beforeAddItem(function () {
+  document.testCollectionName = this.name;
+});
+document.testCollection.addNewItem();
+HERE
+        contextName = page.evaluate_script('document.testCollectionName')
+        contextName.should == 'album[tracks_attributes]'
+      end
+
+      it "should allow for cancelable before-remove handlers" do
+        # Sanity check.
+        page.should have_css('#album_tracks_attributes_0', :visible => true)
+        page.should have_css('#album_tracks_attributes_1', :visible => true)
+
+        page.execute_script <<-HERE
+document.beforeRemoveTestNum = 0;
+Dynested.collection('album[tracks_attributes]').beforeRemoveItem(function () {
+  document.beforeRemoveTestNum += 1;
+  if( this.name == 'album[tracks_attributes][0]' ) {
+    return true; // Proceed to delete item 0.
+  } else {
+    return false; // Cancel deleting any other item.
+  }
+});
+Dynested.item("album[tracks_attributes][0]").remove();
+HERE
+        timesInvoked = page.evaluate_script('document.beforeRemoveTestNum')
+        timesInvoked.should == 1
+        page.should have_no_css('#album_tracks_attributes_0', :visible => true)
+
+        page.execute_script 'Dynested.item("album[tracks_attributes][1]").remove();'
+        timesInvoked = page.evaluate_script('document.beforeRemoveTestNum')
+        timesInvoked.should == 2
+        # This test passes even when changed to that it should break
+        page.should have_css('#album_tracks_attributes_1')
+      end
 
       it "should allow for after-add handlers"
 
@@ -213,6 +276,11 @@ describe "Dynested" do
 
       it "should allow for after-add-or-delete handlers"
 
+      it "should expose a collection's items list"
+
+      it "should expose a collection's last item"
+
+      it "should expose a collection's exept-last items list"
     end
   end
 end
