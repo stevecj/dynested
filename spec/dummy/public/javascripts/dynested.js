@@ -102,4 +102,17 @@ function Dynested() {
     return collection.item(name)
   }
   Dynested.item = item;
+
+  function addItemFor(element) {
+    var collectionName = $(element).attr('data-nested-collection');
+    var collection = Dynested.collection(collectionName);
+    collection.addNewItem();
+  }
+  Dynested.addItemFor = addItemFor;
+
+  $(document).ready( function () {
+    $('.new_nested_item_link').live('click', function() {
+      Dynested.addItemFor(this);
+    });
+  });
 })();

@@ -174,6 +174,11 @@ describe "Dynested" do
         page.should have_no_selector('[data-nested-item="album[tracks_attributes][2]"]')
       end
 
+      it "should make add-new links work" do
+        click_link 'Add new track'
+        page.should have_selector('.nested_item[data-nested-item="album[tracks_attributes][2]"]')
+      end
+
       it "should allow for cancelable before-add handlers"
 
       it "should allow for cancelable before-delete handlers"
