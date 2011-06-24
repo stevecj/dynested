@@ -110,9 +110,19 @@ function Dynested() {
   }
   Dynested.addItemFor = addItemFor;
 
+  function removeItemFor(element) {
+    var itemName = $(element).attr('data-nested-item');
+    var item = Dynested.item(itemName);
+    item.remove();
+  }
+  Dynested.removeItemFor = removeItemFor;
+
   $(document).ready( function () {
     $('.new_nested_item_link').live('click', function() {
       Dynested.addItemFor(this);
+    });
+    $('.delete_nested_item_link').live('click', function() {
+      Dynested.removeItemFor(this);
     });
   });
 })();

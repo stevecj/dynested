@@ -179,6 +179,17 @@ describe "Dynested" do
         page.should have_selector('.nested_item[data-nested-item="album[tracks_attributes][2]"]')
       end
 
+      it "should make remove links work" do
+        within '#album_tracks_attributes_1' do
+          click_link 'Delete track'
+        end
+        within '#album_tracks_attributes_1' do
+          page.should have_xpath("//*[text()='Title']", :visible => false)
+        end
+      end
+
+      it "should render with an empty new item if desired"
+
       it "should allow for cancelable before-add handlers"
 
       it "should allow for cancelable before-delete handlers"
