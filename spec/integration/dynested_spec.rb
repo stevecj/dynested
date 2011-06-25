@@ -308,7 +308,23 @@ HERE
         page.should have_no_css('#album_tracks_attributes_0', :visible => true)
       end
 
-      it "should allow for after-add-or-remove handlers"
+      it "should allow for after-add-or-remove handlers" do
+        # Sanity checks.
+        page.should have_no_selector('[data-nested-item="album[tracks_attributes][2]"]', :visible => true)
+        page.should have_selector('[data-nested-item="album[tracks_attributes][1]"]', :visible => true)
+
+        page.execute_script <<-HERE
+document.testCollectionNames = ''
+Dynested.collection('album[tracks_attributes][0]').afterAddOrRemoveItem(function () {
+  document.testCollectionNames += this.name;
+});
+Dynested.collection("album[tracks_attributes]").addNewItem();
+Dynested.item("album[tracks_attributes][1]").remove();
+HERE
+        collectionNames = page.evaluate_script('document.testCollectionNames')
+        page.should have_selector('[data-nested-item="album[tracks_attributes][2]"]', :visible => true)
+        page.should have_no_selector('[data-nested-item="album[tracks_attributes][1]"]', :visible => true)
+      end
 
       it "should expose a collection's items list"
 

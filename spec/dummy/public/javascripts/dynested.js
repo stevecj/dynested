@@ -50,6 +50,10 @@ function Dynested() {
     }
     this.afterRemoveItem = afterRemoveItem;
 
+    function afterAddOrRemoveItem(fn) {
+    }
+    this.afterAddOrRemoveItem = afterAddOrRemoveItem;
+
     function addNewItem() {
       var proceed = true;
       $.each(beforeAddItemHandlers, function (fn) {
