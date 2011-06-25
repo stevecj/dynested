@@ -18,9 +18,10 @@ describe "Dynested" do
       visit edit_album_path(@album)
     end
 
-    # TODO: Many of the tests in here are not really integration tests,
-    # but don't really know how to test them in isolation yet.  Should
-    # fix that sooner or later.
+    # TODO: Most of the tests in here are not really integration tests,
+    # but functional tests.  The tests won't run when I move the file
+    # out of the integration directory though, and I don't yet know
+    # how to fix that.
 
     it "should generate the elements that fields_for would" do
       page.should have_selector('input#album_tracks_attributes_0_title[value="Byte Me"]')
