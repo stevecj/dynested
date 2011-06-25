@@ -288,9 +288,27 @@ HERE
         firedForItemName.should == 'album[tracks_attributes][2]'
       end
 
-      it "should allow for after-delete handlers"
+      it "should allow for after-remove handlers, each in the collection context, with details" do
+        # Sanity check.
+        page.should have_css('#album_tracks_attributes_0', :visible => true)
 
-      it "should allow for after-add-or-delete handlers"
+        page.execute_script <<-HERE
+Dynested.collection('album[tracks_attributes]').afterRemoveItem(function (details) {
+  document.testCollectionName = this.name;
+  document.testDetails = details;
+});
+Dynested.item("album[tracks_attributes][0]").remove();
+HERE
+        timesInvoked = page.evaluate_script('document.afterRemoveTestNum')
+        collectionName = page.evaluate_script('document.testCollectionName')
+        deletedItemName = page.evaluate_script('document.testDetails.itemName')
+        removedItemContent = page.evaluate_script('document.testDetails.removedElements.html()')
+        collectionName.should == "album[tracks_attributes]"
+        removedItemContent.should =~ /\sdata-nested-item\s*=\s*['"]album\[tracks_attributes\]\[0\]["']/
+        page.should have_no_css('#album_tracks_attributes_0', :visible => true)
+      end
+
+      it "should allow for after-add-or-remove handlers"
 
       it "should expose a collection's items list"
 
