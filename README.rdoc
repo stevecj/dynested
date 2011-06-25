@@ -1,11 +1,18 @@
 = Dynested
 
-This will be a Rails extension to support dynamic collections in
-views that are friendly with accepts_nested_attributes_for in
-models.
+This is a Rails extension to support dynamic, browser-side
+collections that work with accepts_nested_attributes_for in
+Rails models.
 
 Initially, this is intended to be compatible with Rails 3.0.x
 and newer, using jQuery.  Support for Rails 2.x and/or Prototype
 might or might not be added later.
+
+So far, the status of this plugin is that it nominally works
+with the embedded dummy application that is used for testing.
+It is not yet known to work as a plugin with any other real-
+world application (though it is hypothetically ready).  Also,
+the only documentation to speak of is to read the tests in
+spec/integration/dynested.rb.
 
 Copyright (c) 2011 Steve Jorgensen, released under the MIT license
