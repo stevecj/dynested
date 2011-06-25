@@ -122,25 +122,25 @@ describe "Dynested" do
 
       it "should supply a memoized collection object for a collection name" do
         page.execute_script('Dynested.collection("foo").thisIsMe = "yes";')
-        nameValue = page.evaluate_script('Dynested.collection("foo").name')
-        thisIsMeValue = page.evaluate_script('Dynested.collection("foo").thisIsMe')
+        name_value = page.evaluate_script('Dynested.collection("foo").name')
+        this_is_me_value = page.evaluate_script('Dynested.collection("foo").thisIsMe')
 
-        nameValue.should == 'foo'
-        thisIsMeValue.should == 'yes'
+        name_value.should == 'foo'
+        this_is_me_value.should == 'yes'
       end
 
       it "should supply a memoized item object for an item name" do
         page.execute_script('Dynested.item("foo[5]").thisIsMe = "yes";')
-        nameValue = page.evaluate_script('Dynested.item("foo[5]").name')
-        thisIsMeValue = page.evaluate_script('Dynested.item("foo[5]").thisIsMe')
+        name_value = page.evaluate_script('Dynested.item("foo[5]").name')
+        this_is_me_value = page.evaluate_script('Dynested.item("foo[5]").thisIsMe')
 
-        nameValue.should == 'foo[5]'
-        thisIsMeValue.should == 'yes'
+        name_value.should == 'foo[5]'
+        this_is_me_value.should == 'yes'
       end
 
       it "should provide access to an item's collection object" do
-        collectionName = page.evaluate_script('Dynested.item("foo[bars_attributes][5]").collection.name')
-        collectionName.should == 'foo[bars_attributes]'
+        collection_name = page.evaluate_script('Dynested.item("foo[bars_attributes][5]").collection.name')
+        collection_name.should == 'foo[bars_attributes]'
       end
 
       it "should expose a collection's template element" do
@@ -220,13 +220,13 @@ document.testCollection.beforeAddItem(function () {
 });
 document.testCollection.addNewItem();
 HERE
-        timesInvoked = page.evaluate_script('document.beforeAddTestNum')
-        timesInvoked.should == 1
+        times_invoked = page.evaluate_script('document.beforeAddTestNum')
+        times_invoked.should == 1
         page.should have_selector('.nested_item[data-nested-item="album[tracks_attributes][2]"]')
 
         page.execute_script 'document.testCollection.addNewItem();'
-        timesInvoked = page.evaluate_script('document.beforeAddTestNum')
-        timesInvoked.should == 2
+        times_invoked = page.evaluate_script('document.beforeAddTestNum')
+        times_invoked.should == 2
         page.should have_no_selector('.nested_item[data-nested-item="album[tracks_attributes][3]"]')
       end
 
@@ -238,8 +238,8 @@ document.testCollection.beforeAddItem(function () {
 });
 document.testCollection.addNewItem();
 HERE
-        contextName = page.evaluate_script('document.testCollectionName')
-        contextName.should == 'album[tracks_attributes]'
+        context_name = page.evaluate_script('document.testCollectionName')
+        context_name.should == 'album[tracks_attributes]'
       end
 
       it "should allow for cancelable before-remove handlers" do
@@ -259,13 +259,13 @@ Dynested.collection('album[tracks_attributes]').beforeRemoveItem(function () {
 });
 Dynested.item("album[tracks_attributes][0]").remove();
 HERE
-        timesInvoked = page.evaluate_script('document.beforeRemoveTestNum')
-        timesInvoked.should == 1
+        times_invoked = page.evaluate_script('document.beforeRemoveTestNum')
+        times_invoked.should == 1
         page.should have_no_css('#album_tracks_attributes_0', :visible => true)
 
         page.execute_script 'Dynested.item("album[tracks_attributes][1]").remove();'
-        timesInvoked = page.evaluate_script('document.beforeRemoveTestNum')
-        timesInvoked.should == 2
+        times_invoked = page.evaluate_script('document.beforeRemoveTestNum')
+        times_invoked.should == 2
         # This test passes even when changed to that it should break
         page.should have_css('#album_tracks_attributes_1')
       end
@@ -284,8 +284,8 @@ HERE
         # Sanity check.
         page.should have_css('#album_tracks_attributes_2', :visible => true)
 
-        firedForItemName = page.evaluate_script('document.testItemName')
-        firedForItemName.should == 'album[tracks_attributes][2]'
+        fired_for_item_name = page.evaluate_script('document.testItemName')
+        fired_for_item_name.should == 'album[tracks_attributes][2]'
       end
 
       it "should allow for after-remove handlers, each in the collection context, with details" do
@@ -299,12 +299,12 @@ Dynested.collection('album[tracks_attributes]').afterRemoveItem(function (detail
 });
 Dynested.item("album[tracks_attributes][0]").remove();
 HERE
-        timesInvoked = page.evaluate_script('document.afterRemoveTestNum')
-        collectionName = page.evaluate_script('document.testCollectionName')
-        deletedItemName = page.evaluate_script('document.testDetails.itemName')
-        removedItemContent = page.evaluate_script('document.testDetails.removedElements.html()')
-        collectionName.should == "album[tracks_attributes]"
-        removedItemContent.should =~ /\sdata-nested-item\s*=\s*['"]album\[tracks_attributes\]\[0\]["']/
+        times_invoked = page.evaluate_script('document.afterRemoveTestNum')
+        collection_name = page.evaluate_script('document.testCollectionName')
+        deleted_item_name = page.evaluate_script('document.testDetails.itemName')
+        removed_item_content = page.evaluate_script('document.testDetails.removedElements.html()')
+        collection_name.should == "album[tracks_attributes]"
+        removed_item_content.should =~ /\sdata-nested-item\s*=\s*['"]album\[tracks_attributes\]\[0\]["']/
         page.should have_no_css('#album_tracks_attributes_0', :visible => true)
       end
 
