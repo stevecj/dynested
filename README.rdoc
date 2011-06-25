@@ -8,11 +8,26 @@ Initially, this is intended to be compatible with Rails 3.0.x
 and newer, using jQuery.  Support for Rails 2.x and/or Prototype
 might or might not be added later.
 
-So far, the status of this plugin is that it nominally works
-with the embedded dummy application that is used for testing.
-It is not yet known to work as a plugin with any other real-
-world application (though it is hypothetically ready).  Also,
-the only documentation to speak of is to read the tests in
-spec/integration/dynested.rb.
+To use this in your Rails 3 project (must be using jQuery),
+first add the following to your Gemfile...
+
+    gem 'dynested', :git => 'git@github.com:stevecj/dynested.git'
+
+... and then execute...
+
+    rails generate dynested:javascript
+
+Finally, you need to load the dynested Javascript file in your
+relevant layout file(s)...
+
+  <%= javascript_include_tag :defaults, 'dynested' %>
+
+This is a brand new project, and is still pretty rough around
+the edges.  The only documentation so far amounts to the
+comments in the /lib/dynested/form_builder_helpers.rb file,
+the tests in /spec/integration/dynested_spec.rb, and the
+usage examples in the Rails application in /spec/dummy.
+Specifically, under /spec/dummy/app/views, see
+layouts/application.html.erb and albums/_form.html.erb.
 
 Copyright (c) 2011 Steve Jorgensen, released under the MIT license

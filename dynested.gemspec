@@ -5,5 +5,5 @@ Gem::Specification.new do |s|
   s.summary = "Dynested 0.1.0"
   s.description = "Dynamic, browser-side nested attribute support for Rails."
   s.files = Dir["{app,lib,config}/**/*"] + ["MIT-LICENSE", "Rakefile", "Gemfile", "README.rdoc"]
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 end
