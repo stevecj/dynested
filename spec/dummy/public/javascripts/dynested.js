@@ -105,6 +105,21 @@ function Dynested() {
       return proceed;
     }
     this.handleAfterRemoveItem = handleAfterRemoveItem;
+
+    function currentItems() {
+      itemElements = $('.nested_item[data-nested-collection="' + this.name + '"]');
+      result = [];
+      var iName;
+      $.each(itemElements, function () {
+        iName = $(this).attr('data-nested-item');
+        // Add to result unless flagged as destroyed.
+        if( $(this).find('input[name="' + iName + '[_destroy]"][value="true"]').length == 0 ) {
+          result.push( thisCollection.item(iName) );
+        }
+      });
+      return result;
+    }
+    this.currentItems = currentItems;
   }
   Dynested.Collection = Collection;
 
@@ -134,9 +149,14 @@ function Dynested() {
     this.collection = collection;
     this.name = name;
 
+    function elements() {
+      return $('.nested_item[data-nested-item="' + this.name + '"]');
+    }
+    this.elements = elements;
+
     function remove() {
       if( ! this.collection.handleBeforeRemoveItem(this) ) { return false; }
-      var itemElement = $('.nested_item[data-nested-item="' + name + '"]');
+      var itemElement = this.elements();
       var idFieldName = this.name + '[id]';
       if( $('input[name="' + idFieldName + '"]').length > 0 ) {
         // Existing saved item (has id field), so flag for destruction, and hide.

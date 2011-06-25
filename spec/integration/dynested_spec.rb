@@ -143,6 +143,11 @@ describe "Dynested" do
         collection_name.should == 'foo[bars_attributes]'
       end
 
+      it "should return the elements for an item" do
+        item_html = page.evaluate_script('Dynested.item("album[tracks_attributes][1]").elements().html()')
+        item_html.should =~ /value\s*=\s*['"]Streamin Down["']/
+      end
+
       it "should expose a collection's template element" do
         next_nested_item_name = page.evaluate_script(
           "Dynested.collection('album[tracks_attributes]').template().attr('data-next-nested-item');"
@@ -315,7 +320,7 @@ HERE
 
         page.execute_script <<-HERE
 document.testCollectionNames = ''
-Dynested.collection('album[tracks_attributes][0]').afterAddOrRemoveItem(function () {
+Dynested.collection('album[tracks_attributes]').afterAddOrRemoveItem(function () {
   document.testCollectionNames += this.name;
 });
 Dynested.collection("album[tracks_attributes]").addNewItem();
@@ -326,11 +331,27 @@ HERE
         page.should have_no_selector('[data-nested-item="album[tracks_attributes][1]"]', :visible => true)
       end
 
-      it "should expose a collection's items list"
+      it "should generate a list of current items list for a collection" do
+        page.execute_script <<-HERE
+document.testCollection = Dynested.collection('album[reviews_attributes]');
+document.testItemsBefore = document.testCollection.currentItems();
+Dynested.collection('album[reviews_attributes]').addNewItem();
+Dynested.item('album[reviews_attributes][0]').remove();
+Dynested.item('album[reviews_attributes][2]').remove();
+document.testItemsAfter = document.testCollection.currentItems();
+HERE
+        item_count_before = page.evaluate_script('document.testItemsBefore.length')
+        item_count_after  = page.evaluate_script('document.testItemsAfter.length')
+        item_count_before.should == 2
+        item_count_after.should == 1
+        item_0_name_before = page.evaluate_script('document.testItemsBefore[0].name')
+        item_1_name_before = page.evaluate_script('document.testItemsBefore[1].name')
+        item_0_name_after  = page.evaluate_script('document.testItemsAfter[0].name')
+        item_0_name_before.should == 'album[reviews_attributes][0]'
+        item_1_name_before.should == 'album[reviews_attributes][1]'
+        item_0_name_after.should  == 'album[reviews_attributes][1]'
+      end
 
-      it "should expose a collection's last item"
-
-      it "should expose a collection's exept-last items list"
     end
   end
 end
