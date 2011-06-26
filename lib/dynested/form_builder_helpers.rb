@@ -29,7 +29,7 @@ module Dynested
     end
 
     def link_to_add_collection_item(collection_attr_name, html_options={}, &b)
-      view_context = eval('self', b)
+      view_context = eval('self', b.binding)
       collection_name = '%s[%s_attributes]' % [object_name, collection_attr_name]
       html_options = HashWithIndifferentAccess.new(html_options)
       html_options[:class] = 'new_nested_item_link'
@@ -41,7 +41,7 @@ module Dynested
       attr_accessor :content
 
       def initialize(builder, collection_attr_name, item_object, opts={}, &b)
-        @view_context = eval('self', b)
+        @view_context = eval('self', b.binding)
 
         # Invoke fields_for with supplied block, and capture
         # the item object name from the fields_for block
@@ -86,7 +86,7 @@ module Dynested
 
       module BuilderMethods
         def link_to_delete_item(html_options={}, &b)
-          view_context = eval('self', b)
+          view_context = eval('self', b.binding)
           collection_name = object_name.sub(/\[\d*\]$/, '')
           html_options = HashWithIndifferentAccess.new(html_options)
           html_options[:class] = 'delete_nested_item_link'
