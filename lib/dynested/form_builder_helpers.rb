@@ -14,13 +14,13 @@ module Dynested
       # Only handling the case of a lone collection name parameter for now.
       array = object.send(collection_name_or_array)
       item_objects = Array.new(array)
-      item_objects << array.new if with_new_item
+      item_objects << array.build if with_new_item
       items = item_objects.map do |item_object|
         item = FieldsForItem.new(self, collection_name_or_array, item_object, opts, &b)
         item.wrap_as_item_element
         item
       end
-      new_obj_for_template = array.new
+      new_obj_for_template = array.build
       template_item = FieldsForItem.new(self, collection_name_or_array, new_obj_for_template, opts, &b)
       template_item.wrap_as_item_element
       template_item.wrap_as_new_item_template
