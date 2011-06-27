@@ -16,6 +16,7 @@
     <%= f.text_field :title %>
   </div>
 
+  <h2>Tracks</h2>
   <%= f.fields_for_collection :tracks do |track_fields| %>
     <div class="field">
       <%= track_fields.label :title %><br />
@@ -33,6 +34,15 @@
     <%= f.link_to_add_collection_item :tracks, :new_item => true do %>Add new track<% end %>
   </div>
 
+  <h2>Notes</h2>
+  <%= f.fields_for_collection :notes, @notes do |note_fields| %>
+    <div class="field">
+      <%= note_fields.label :note %><br />
+      <%= note_fields.text_field :note %>
+    </div>
+  <% end %>
+
+  <h2>Reviews</h2>
   <%= f.fields_for_collection :reviews, :new_item => true do |review_fields| %>
     <div class="field">
       <%= review_fields.label :review %><br />

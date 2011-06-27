@@ -25,6 +25,10 @@ class AlbumsController < ApplicationController
   # GET /albums/new.xml
   def new
     @album = Album.new
+    @notes = [
+      @album.notes.build(:note => 'Some note...'),
+      @album.notes.build(:note => 'Miscellaneous other note...')
+    ]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -35,6 +39,10 @@ class AlbumsController < ApplicationController
   # GET /albums/1/edit
   def edit
     @album = Album.find(params[:id])
+    @notes = [
+      @album.notes.build(:note => 'Some note...'),
+      @album.notes.build(:note => 'Miscellaneous other note...')
+    ]
   end
 
   # POST /albums

@@ -3,25 +3,40 @@ module Dynested
     NEWLINE = "\n".html_safe()
     
     # An extended version of fields_for with improved support
-    # for dynamic collections.  So far, this only supports a
-    # collection name as the first argument, and does not yet
-    # deal with having a model instance or array as the second
-    # argument.
-    def fields_for_collection(collection_name_or_array, *args, &b)
+    # for dynamic collections.
+    # The first argument is the collection name, and the
+    # optional second argument is an explicit collection of
+    # model instances.
+    # The options hash may include fields_for options and may
+    # also include a :new_item value.
+    # If :new_item is true, a new item will automatically be
+    # rendered, utilizing the "build" method of the collection
+    # (if possible) or named collection to produce a model
+    # instance for that.
+    def fields_for_collection(collection_name, *args, &b)
       opts = args.extract_options!
       with_new_item = opts.delete(:new_item)
+      obj_for_template = opts.delete(:template)
 
-      # Only handling the case of a lone collection name parameter for now.
-      array = object.send(collection_name_or_array)
+      if args.length > 0 && args.first.respond_to?(:to_ary)
+        array = args.shift
+        new_item_source = array.respond_to?(:build) ?
+                            array :
+                            object.send(collection_name)
+      else
+        array = object.send(collection_name)
+        new_item_source = array
+      end
+
       item_objects = Array.new(array)
       item_objects << array.build if with_new_item
       items = item_objects.map do |item_object|
-        item = FieldsForItem.new(self, collection_name_or_array, item_object, opts, &b)
+        item = FieldsForItem.new(self, collection_name, item_object, opts, &b)
         item.wrap_as_item_element
         item
       end
-      new_obj_for_template = array.build
-      template_item = FieldsForItem.new(self, collection_name_or_array, new_obj_for_template, opts, &b)
+      obj_for_template = new_item_source.build
+      template_item = FieldsForItem.new(self, collection_name, obj_for_template, opts, &b)
       template_item.wrap_as_item_element
       template_item.wrap_as_new_item_template
       items << template_item

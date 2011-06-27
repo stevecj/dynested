@@ -75,6 +75,13 @@ describe "Dynested" do
         /^\s*<div\s.*\sdata-nested-item\s*="album\[tracks_attributes\]\[2\]".*<\/div>\s*$/m
     end
 
+    it "should utilize a custom collection and template source" do
+      # AlbumsController constructs hard-coded array of notes.
+      # See /spec/dummy/app/controllers/albums_controller.rb
+      page.should have_selector('input#album_notes_attributes_0_note[value="Some note..."]')
+      page.should have_selector('input#album_notes_attributes_1_note[value="Miscellaneous other note..."]')
+    end
+
     it "should generate an add-item link" do
       within(
         'a.new_nested_item_link[data-nested-collection="album[tracks_attributes]"]'
