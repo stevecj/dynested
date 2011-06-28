@@ -329,12 +329,13 @@ HERE
         page.execute_script <<-HERE
 document.testCollectionNames = ''
 Dynested.collection('album[tracks_attributes]').afterAddOrRemoveItem(function () {
-  document.testCollectionNames += this.name;
+  document.testCollectionNames += this.name + ';';
 });
 Dynested.collection("album[tracks_attributes]").addNewItem();
 Dynested.item("album[tracks_attributes][1]").remove();
 HERE
         collectionNames = page.evaluate_script('document.testCollectionNames')
+        collectionNames.should == 'album[tracks_attributes];album[tracks_attributes];'
         page.should have_selector('[data-nested-item="album[tracks_attributes][2]"]', :visible => true)
         page.should have_no_selector('[data-nested-item="album[tracks_attributes][1]"]', :visible => true)
       end

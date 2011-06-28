@@ -51,6 +51,8 @@ function Dynested() {
     this.afterRemoveItem = afterRemoveItem;
 
     function afterAddOrRemoveItem(fn) {
+      this.afterAddItem(fn);
+      this.afterRemoveItem(fn);
     }
     this.afterAddOrRemoveItem = afterAddOrRemoveItem;
 
