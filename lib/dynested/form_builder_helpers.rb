@@ -8,11 +8,13 @@ module Dynested
     # optional second argument is an explicit collection of
     # model instances.
     # The options hash may include fields_for options and may
-    # also include a :new_item value.
+    # also :new_item and/or :item_tag values.
     # If :new_item is true, a new item will automatically be
     # rendered, utilizing the "build" method of the collection
     # (if possible) or named collection to produce a model
     # instance for that.
+    # The :item_tag option specifies the tag to use for item
+    # wrapper elements.  The default tag is 'div'.
     def fields_for_collection(collection_name, *args, &b)
       opts = args.extract_options!
       with_new_item = opts.delete(:new_item)
@@ -56,6 +58,8 @@ module Dynested
       attr_accessor :content
 
       def initialize(builder, collection_attr_name, item_object, opts={}, &b)
+        opts = opts.dup
+        @item_tag = opts.delete(:item_tag) || :div
         @view_context = eval('self', b.binding)
 
         # Invoke fields_for with supplied block, and capture
@@ -77,7 +81,7 @@ module Dynested
       def wrap_as_item_element
         element_id = @item_name.gsub('[', '_').gsub(']', '')
         @content = @view_context.content_tag(
-          :div, @content,
+          @item_tag, @content,
           :class                   => 'nested_item',
           :id                      => element_id,
           'data-nested-collection' => @collection_name,

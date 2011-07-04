@@ -17,18 +17,23 @@
   </div>
 
   <h2>Tracks</h2>
-  <%= f.fields_for_collection :tracks do |track_fields| %>
-    <div class="field">
-      <%= track_fields.label :title %><br />
-      <%= track_fields.text_field :title %>
-    </div>
-    <div class="field">
-      <%= track_fields.label :duration_seconds %><br />
-      <%= track_fields.text_field :duration_seconds %>
-    </div>
-    <%= track_fields.hidden_field :_destroy %>
-    <%= track_fields.link_to_delete_item do %>Delete track<% end %>
-  <% end %>
+  <table>
+    <tr><th>Title</th><th>Duration (Seconds)</th></tr>
+    <%= f.fields_for_collection :tracks, :item_tag => :tr do |track_fields| %>
+      <td class="field">
+        <%= track_fields.label :title %><br />
+        <%= track_fields.text_field :title %>
+      </td>
+      <td class="field">
+        <%= track_fields.label :duration_seconds %><br />
+        <%= track_fields.text_field :duration_seconds %>
+      </td>
+      <td class="field">
+        <%= track_fields.hidden_field :_destroy %>
+        <%= track_fields.link_to_delete_item do %>Delete track<% end %>
+      </td>
+    <% end %>
+  </table>
 
   <div>
     <%= f.link_to_add_collection_item :tracks, :new_item => true do %>Add new track<% end %>

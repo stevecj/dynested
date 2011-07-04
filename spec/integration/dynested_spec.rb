@@ -31,9 +31,8 @@ describe "Dynested" do
       page.should have_selector('input#album_tracks_attributes_1_id[value="%d"]' % @album.tracks[1].id)
     end
     
-    it "should wrap each item in an appropriately constructed div" do
+    it "should wrap each item in an appropriately constructed element" do
       wrapper_selector_common =
-        'div' +
         '.nested_item' +
         '[data-nested-collection="album[tracks_attributes]"]'
 
@@ -54,6 +53,22 @@ describe "Dynested" do
       page.should have_no_selector('#album_tracks_attributes_2')
     end
 
+    it "should use 'div' as the default item wrapper tag" do
+      page.should have_selector \
+        'div' +
+        '.nested_item' +
+        '[data-nested-collection="album[reviews_attributes]"]' +
+        '[data-nested-item="album[reviews_attributes][0]"]'
+    end
+
+    it "should use 'tr' as the default item wrapper tag when specified" do
+      page.should have_selector \
+        'tr' +
+        '.nested_item' +
+        '[data-nested-collection="album[tracks_attributes]"]' +
+        '[data-nested-item="album[tracks_attributes][0]"]'
+    end
+
     it "should render with an empty new item if desired" do
       # Sanity check.
       page.should have_selector('input#album_reviews_attributes_0_id')
@@ -72,7 +87,7 @@ describe "Dynested" do
       template = page.find(template_selector)
       template['data-next-nested-item'].should == 'album[tracks_attributes][2]'
       template['data-nested-item-content'].should =~
-        /^\s*<div\s.*\sdata-nested-item\s*="album\[tracks_attributes\]\[2\]".*<\/div>\s*$/m
+        /^\s*<tr\s.*\sdata-nested-item\s*="album\[tracks_attributes\]\[2\]".*<\/tr>\s*$/m
     end
 
     it "should utilize a custom collection and template source" do

@@ -2,8 +2,8 @@
 # project in your rails apps through git.
 Gem::Specification.new do |s|
   s.name = "dynested"
-  s.summary = "Dynested 0.1.5"
   s.description = "Dynamic, browser-side nested attribute support for Rails."
   s.files = Dir["{app,lib,config}/**/*"] + ["MIT-LICENSE", "Rakefile", "Gemfile", "README.rdoc"]
-  s.version = "0.1.5"
+  s.version = "0.1.6"
+  s.summary = "Dynested %s" % s.version 
 end
